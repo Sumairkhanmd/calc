@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="d2534dd1-7c52-4fc3-ad71-69683ebd257c" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<http:listener-config name="HTTP_Listener_config1" doc:name="HTTP Listener config" doc:id="dedeccf9-3f08-4921-aa95-4afbc19439b5" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<flow name="calcapiFlow" doc:id="632a2fc3-f6a0-4c84-8682-fc55463cdb11" >
+		<http:listener doc:name="Listener" doc:id="811b0b5b-264a-4306-bdbc-2c80121b3be4" config-ref="HTTP_Listener_config" path="/calc"/>
+		<logger level="INFO" doc:name="Logger" doc:id="ee31c0cb-eb51-4408-b67e-674e4156b5d2" message='#["Entered into calc..."]'/>
+		<ee:transform doc:name="Transform Message" doc:id="67b1f0fb-afec-428a-b4a4-70616cc46069" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+"add: " ++ attributes.queryParams.a + attributes.queryParams.b
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="10934de2-e3f2-48e9-a252-eb1605a2dbd8" message='#["add: " ++ attributes.queryParams.a + attributes.queryParams.b]'/>
+	</flow>
+	<flow name="calcapiFlow1" doc:id="841d31f2-e600-490c-9c06-32da5bc69119" >
+		<http:listener doc:name="Listener" doc:id="6cc5ae6e-de34-4efa-9b05-e7dda797b1f3" config-ref="HTTP_Listener_config1" path="/calc1"/>
+		<logger level="INFO" doc:name="Logger" doc:id="8d325ec1-74d5-45c3-9360-3f3bf604ca3a" message='#["Entered into calc"]'/>
+		<ee:transform doc:name="Transform Message" doc:id="c6753b15-788c-488b-99d8-a97c01b782ce" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+"sub: " ++ attributes.queryParams.fname - attributes.queryParams.lname]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="abce5597-a9be-4075-ba4a-b4da82d03b35" message='#["sub: " ++ attributes.queryParams.fname - attributes.queryParams.lname]'/>
+	</flow>
+</mule>
